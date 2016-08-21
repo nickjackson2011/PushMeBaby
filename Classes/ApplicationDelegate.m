@@ -165,11 +165,22 @@
 	NSMutableData *deviceToken = [NSMutableData data];
 	unsigned value;
 	NSScanner *scanner = [NSScanner scannerWithString:self.deviceToken];
-	while(![scanner isAtEnd]) {
-		[scanner scanHexInt:&value];
-		value = htonl(value);
-		[deviceToken appendBytes:&value length:sizeof(value)];
-	}
+    NSUInteger count = 0;
+    while(![scanner isAtEnd]) {
+        [scanner scanHexInt:&value];
+        value = htonl(value);
+        [deviceToken appendBytes:&value length:sizeof(value)];
+        if (++count >= [self.deviceToken length]-1) {
+            break;
+        }
+    }
+    /*
+    while(![scanner isAtEnd]) {
+        [scanner scanHexInt:&value];
+        value = htonl(value);
+        [deviceToken appendBytes:&value length:sizeof(value)];
+    }
+    */
 	
 	// Create C input variables.
 	char *deviceTokenBinary = (char *)[deviceToken bytes];
